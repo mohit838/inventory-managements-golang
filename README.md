@@ -1,6 +1,6 @@
-# Inventory Managements Golang
+# Inventory Management Golang
 
-Inventory management system for portfolio project with golang.
+A full-featured Inventory Management system built with Go for learning and portfolio purposes.
 
 ## Table of Contents
 
@@ -28,35 +28,35 @@ Inventory management system for portfolio project with golang.
 
 Before you begin, ensure you have:
 
-- Go 1.24 (or later) installed and `GOPATH` set.
-- MySQL (Community or Docker) accessible (version ≥ 5.7 for JSON support).
-- Redis (version ≥ 6.0) accessible (if you plan to use caching or pub/sub).
-- Docker & Docker Compose (for containerized setup).
-- `golang-migrate` CLI (if you intend to run migrations manually).
+- **Go 1.24 (or later)** installed and `GOPATH` set.
+- **MySQL** (≥ 5.7 for JSON support) accessible (either locally or via Docker).
+- **Redis** (≥ 6.0) accessible if you plan to use caching or pub/sub.
+- **Docker & Docker Compose** (for containerized setup).
+- **golang-migrate CLI** (if you intend to run migrations manually):
 
   ```bash
   go install github.com/golang-migrate/migrate/v4/cmd/migrate@latest
   ```
 
-- (Optional) `make` if you want to add Makefile targets for common tasks.
+- (Optional) **make** if you’d like a Makefile for common tasks.
 
 ---
 
 ## Project Installation
 
 ```bash
-# Clone the repo (if you haven’t already)
+# Clone the repository
 git clone https://github.com/your-username/inventory-managements-golang.git
 cd inventory-managements-golang
 
-# Download dependencies
+# Download Go module dependencies
 go mod download
 
 # Clean up unused dependencies
 go mod tidy
 ```
 
-> **Note:** The module path should match your repository. Adjust imports if you fork or rename.
+> **Note:** Adjust the module path in `go.mod` and imports if you fork or rename the repository.
 
 ---
 
@@ -64,62 +64,62 @@ go mod tidy
 
 ### YAML Config File
 
-This project uses a single YAML file for all configuration. By default, the code looks for `config/local.yml` unless overridden by:
+The application reads configuration from a single YAML file by default (`config/local.yml`). You can override this by:
 
-- An environment variable:
+- Setting an environment variable:
 
   ```bash
   export CONFIG_PATH=/path/to/your/config.yml
   ```
 
-- A command‐line flag:
+- Passing a flag when running:
 
   ```bash
   go run main.go -config=/path/to/your/config.yml
   ```
 
-#### Example `config/local.yml`
+#### Example `config/local.yml` (placeholders)
 
 ```yaml
 env: "dev"
 
 app:
-  port: 1234
-  name: "Project Name"
+  port: <APP_PORT>
+  name: "Inventory Management"
   version: "1.0.0"
-  description: "Project description."
+  description: "Manage inventory items, categories, and stock levels."
 
 database:
   driver: "mysql"
-  host: "localhost"
-  port: 3306
-  db_name: "db_name"
-  username: "root"
-  password: "123456789"
+  host: "<DB_HOST>"
+  port: <DB_PORT>
+  db_name: "<DB_NAME>"
+  username: "<DB_USER>"
+  password: "<DB_PASSWORD>"
   charset: "utf8mb4"
   parse_time: true
   loc: "Local"
   max_idle_conns: 10
-  max_open_conns: 100
+  max_open_conns: 50
 
 redis:
-  host: "localhost"
-  port: 6379
-  password: "123456789"
+  host: "<REDIS_HOST>"
+  port: <REDIS_PORT>
+  password: "<REDIS_PASSWORD>"
   db: 0
 
 jwt:
-  secret: "tHISiSsERECT"
+  secret: "<JWT_SECRET>"
   expires_in: "24h"
 
 refresh_token:
-  secret: "tHISiSsERECTrEFRESH"
+  secret: "<REFRESH_SECRET>"
   expires_in: "7d"
 ```
 
-- **`env`**: Sets the application environment (`dev`, `staging`, `prod`, etc.).
+- **`env`**: Application environment (`dev`, `staging`, `prod`, etc.).
 - **`app.port`**: Port on which the HTTP server listens.
-- **`database.*`**: All MySQL connection details.
+- **`database.*`**: MySQL connection details.
 - **`redis.*`**: Redis host, port, password, and database index.
 - **`jwt.*`** / **`refresh_token.*`**: Secrets and expiration durations.
 
@@ -127,82 +127,82 @@ refresh_token:
 
 ### Environment Variables
 
-If you prefer environment variables over YAML, you can override the following:
+If you prefer environment variables over YAML, you can override:
 
 ```bash
 export CONFIG_PATH=./config/production.yml
 export CONFIG_ENV=prod
 ```
 
-> **Tip:** You could also use a `.env` file for local development (with tools like [joho/godotenv](https://github.com/joho/godotenv)), but our setup prioritizes YAML first. If you do use a `.env`, be sure it does not conflict with the YAML path.
+> **Tip:** You could also use a `.env` file for local development (with [joho/godotenv](https://github.com/joho/godotenv)), but the code prioritizes YAML first. If you use a `.env`, ensure it doesn’t conflict with the YAML path.
 
 ---
 
 ## Database Migrations
 
-We use [golang-migrate](https://github.com/golang-migrate/migrate) to version and apply schema changes. Migration files live in `cmd/migrate/migrations/`.
+We use [golang-migrate](https://github.com/golang-migrate/migrate) to version and apply schema changes. Migration files live under `cmd/migrate/migrations/`.
 
 ### Creating a New Migration
 
 From the project root, run:
 
 ```bash
-migrate create -ext sql -dir ./cmd/migrate/migrations -seq create_todo_table
+migrate create -ext sql -dir ./cmd/migrate/migrations -seq create_items_table
 ```
 
 This generates:
 
 ```
 cmd/migrate/migrations/
-    1_create_todo_table.up.sql
-    1_create_todo_table.down.sql
+    1_create_items_table.up.sql
+    1_create_items_table.down.sql
 ```
 
-- **Edit** `1_create_todo_table.up.sql` to add your `CREATE TABLE todos (…)` DDL.
-- **Edit** `1_create_todo_table.down.sql` to add `DROP TABLE IF EXISTS todos;`.
+- **Edit** `1_create_items_table.up.sql` to add your `CREATE TABLE items (…)` DDL.
+- **Edit** `1_create_items_table.down.sql` to add `DROP TABLE IF EXISTS items;`.
 
-You can name the files however you like (e.g. `00000001_todo_table.up.sql`), but make sure the version prefix is monotonic (sequential or timestamp).
+You can name files as `00000001_items_table.up.sql` if you prefer zero-padding. Just keep the version prefix monotonic (sequential or timestamp).
 
 ### Applying Migrations
 
-If you prefer running migrations manually:
+To run all pending “up” migrations:
 
 ```bash
 go run cmd/migrate/main.go up
 ```
 
-This does the following:
+This does:
 
-1. Loads `config/local.yml` (or the path specified by `CONFIG_PATH`).
-2. Builds a MySQL DSN from `cfg.Database`.
-3. Opens an `*sqlx.DB` and extracts the underlying `*sql.DB`.
-4. Uses `migrate.NewWithDatabaseInstance` to point at your migration folder.
-5. Runs all pending `*.up.sql` scripts in order.
+1. Load `config/local.yml` (or path from `CONFIG_PATH`).
+2. Build a MySQL DSN from `cfg.Database`.
+3. Open an `*sqlx.DB`, extract the underlying `*sql.DB`.
+4. Use `migrate.NewWithDatabaseInstance` to point at migrations folder.
+5. Run all pending `*.up.sql` in version order.
 
-To roll back one step (or apply the next `*.down.sql`):
+To roll back one step (or run `*.down.sql`):
 
 ```bash
 go run cmd/migrate/main.go down
 ```
 
-If you want to generate SQL without applying it, you can also build a binary and use:
+If you build a binary (e.g. `inventory-migrate`), you can simply run:
 
 ```bash
-./todo-migrate up
-./todo-migrate down
+./inventory-migrate up
+./inventory-migrate down
 ```
 
-> **Tip:** If your DDL folder is somewhere else, adjust the `"file://cmd/migrate/migrations"` path in `main.go` accordingly.
+> **Tip:** If your migrations folder is elsewhere, adjust `"file://cmd/migrate/migrations"` in `main.go`.
 
 ---
 
 ## Running with Docker
 
-We provide a `docker-compose.yml` to spin up MySQL, Redis, and the Go application itself. By default, it expects:
+We provide a `docker-compose.yml` to spin up MySQL, Redis, and the Go application. By default, it expects:
 
 - **MySQL** at `mysql:3306`
 - **Redis** at `redis:6379`
-- **Go app** listening on port `1234` (mapped to your host)
+- **Go app** listening on port `3179` (mapped to host)
 
 ### Example `docker-compose.yml`
 
@@ -215,10 +215,10 @@ services:
     container_name: ims_mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: 123456789
-      MYSQL_DATABASE: db_name
-      MYSQL_USER: root
-      MYSQL_PASSWORD: 123456789
+      MYSQL_ROOT_PASSWORD: <DB_PASSWORD>
+      MYSQL_DATABASE: <DB_NAME>
+      MYSQL_USER: <DB_USER>
+      MYSQL_PASSWORD: <DB_PASSWORD>
     ports:
       - "3306:3306"
     volumes:
@@ -228,7 +228,7 @@ services:
     image: redis:7.0
     container_name: ims_redis
     restart: unless-stopped
-    command: redis-server --requirepass "123456789"
+    command: redis-server --requirepass "<REDIS_PASSWORD>"
     ports:
       - "6379:6379"
 
@@ -255,38 +255,42 @@ volumes:
 #### Build and Run
 
 ```bash
-# Build images and start containers in the background
+# Build images and start containers in background
 docker compose up -d --build
 
-# View real-time logs for your Go app
+# View real-time logs for Go app
 docker logs -f ims_app
 
-# Open a shell inside the running Go app container
+# Open shell inside Go app container
 docker exec -it ims_app sh
 ```
 
-- **Configuration Path**: We set `CONFIG_PATH=/app/config/local.yml` so that inside the container, the Go process loads `config/local.yml`.
-- **Live Reload** (optional): The volume `.:/app` can be helpful during development. If you modify Go code, you can manually restart the container or use a tool like `air` for hot reloading.
+- **CONFIG_PATH**: We set `CONFIG_PATH=/app/config/local.yml` so that inside Docker, Go loads your YAML.
+- **Live Reload**: The volume `.:/app` lets you edit code locally and restart the container manually (or use a hot-reload tool like `air`).
 
 ---
 
 ## Running Locally (Without Docker)
 
-1. **Start MySQL & Redis locally** (assuming defaults):
+1. **Start MySQL & Redis locally** (defaults):
 
    ```bash
    # MySQL
-   docker run -d --name ims-mysql -e MYSQL_ROOT_PASSWORD=123456789 -e MYSQL_DATABASE=db_name -p 3306:3306 mysql:8.0
+   docker run -d --name ims-mysql \
+     -e MYSQL_ROOT_PASSWORD=<DB_PASSWORD> \
+     -e MYSQL_DATABASE=<DB_NAME> \
+     -p 3306:3306 \
+     mysql:8.0
 
-   # Redis (no password for quick dev)
-   docker run -d --name ims-redis -p 6379:6379 redis:7.0
+   # Redis (password optional for dev)
+   docker run -d --name ims-redis \
+     -p 6379:6379 \
+     redis:7.0
    ```
 
-2. **Ensure `config/local.yml` matches your local setup** (e.g., `host: "localhost"`, `password: ""` for Redis if no auth).
+2. **Ensure `config/local.yml` matches local setup** (e.g., host: `"localhost"`, empty Redis password if none).
 
-3. **Initialize Redis client** (inside code):
-
-   In `main.go`, you should have something like:
+3. **Initialize Redis client** (in `main.go`):
 
    ```go
    if err := redis.RedisInitialized(cfg.Redis); err != nil {
@@ -296,7 +300,7 @@ docker exec -it ims_app sh
    slog.Info("Connected to Redis successfully")
    ```
 
-   This guarantees `redis.Client` is non‐nil before any handler uses it.
+   This ensures `redis.Client` is non-nil before handlers use it.
 
 4. **Run migrations**:
 
@@ -310,20 +314,20 @@ docker exec -it ims_app sh
    go run main.go
    ```
 
-   You should see logs like:
+   You should see:
 
    ```
    {"time":"…","level":"INFO","msg":"Connected to Redis successfully"}
    {"time":"…","level":"INFO","msg":"Server starting","addr":":3179","env":"dev"}
    ```
 
-6. **Hit your endpoints** (e.g., `GET http://localhost:3179/health`, `GET http://localhost:3179/rts`, etc.).
+6. **Hit endpoints** (e.g., `GET http://localhost:3179/health`, `GET http://localhost:3179/rts`, etc.).
 
 ---
 
 ## Redis Initialization
 
-In `pkg/redis/redis.go`, we define:
+In `pkg/redis/redis.go`:
 
 ```go
 var Client *redis.Client
@@ -347,9 +351,9 @@ func RedisInitialized(cfg config.Redis) error {
 }
 ```
 
-- Call this once at startup (e.g. in `main()`) so that `redis.Client` is initialized.
-- If you skip this call, `redis.Client` remains `nil`, and any attempt to `Set`/`Get` will panic.
-- It’s best practice to use `c.Request.Context()` in handlers so that Redis calls respect HTTP cancellations.
+- Call this once at startup (e.g., in `main()`) so that `redis.Client` is populated.
+- If you skip this, `redis.Client` remains `nil`, and any `Set`/`Get` will panic.
+- In handlers, prefer using `c.Request.Context()` instead of `context.Background()` so Redis calls respect HTTP cancellations.
 
 ---
 
@@ -363,9 +367,9 @@ func RedisInitialized(cfg config.Redis) error {
 ├── config/
 │   └── local.yml           # YAML config
 ├── pkg/
-│   ├── config/             # YAML‐loading logic (AppConfig)
+│   ├── config/             # YAML-loading logic (AppConfig)
 │   ├── container/          # Dependency injection / service builders
-│   ├── logging/            # slog or zap initialization
+│   ├── logging/            # slog initialization
 │   ├── redis/              # Redis client initialization
 │   └── …
 ├── router/
@@ -379,38 +383,38 @@ func RedisInitialized(cfg config.Redis) error {
 
 - **`main.go`**
 
-  - Initializes structured logging (e.g. `slog.Init()`).
+  - Initializes structured logging (`logging.Init()`).
   - Loads config (`config.AppConfig()`).
   - Calls `redis.RedisInitialized(cfg.Redis)`.
-  - Constructs the DI container (`container.PkgContainer(cfg)`).
+  - Constructs DI container (`container.PkgContainer(cfg)`).
   - Defers `c.DBClose()`.
   - Sets up Gin with `router.Setup()`.
-  - Creates and starts the HTTP server with graceful‐shutdown logic.
+  - Creates and starts the HTTP server with graceful-shutdown logic.
 
 - **`router/router.go`**
 
-  - `Setup()` registers public routes (e.g. `/health`, `/rts`, plus you’ll likely add your CRUD endpoints here).
-  - `CreateServer()` returns an `*http.Server` preconfigured with read/write timeouts.
+  - `Setup()` registers routes (e.g., `/health`, `/rts`, and inventory CRUD).
+  - `CreateServer()` returns an `*http.Server` preconfigured with timeouts.
 
 - **`pkg/config`**
 
   - Defines `Config`, `Database`, `Redis`, `Jwt`, `RefreshToken` structs.
-  - `AppConfig()` reads YAML or a `-config` flag and unmarshals into `*Config`.
+  - `AppConfig()` reads YAML (or `-config` flag) and unmarshals into `*Config`.
 
 - **`pkg/redis`**
 
   - Exports `var Client *redis.Client`.
-  - `RedisInitialized(cfg config.Redis)` populates `Client` and tests a PING.
+  - `RedisInitialized(cfg config.Redis)` populates `Client` and pings.
 
 - **`pkg/container`**
 
-  - Builds any repositories/services (e.g. `TodoService`, `UserService`) and injects `*sqlx.DB` + `*redis.Client` + any other dependencies.
+  - Builds repositories/services (e.g., `ItemService`, `CategoryService`) and injects `*sqlx.DB` + `*redis.Client` + others.
 
 ---
 
 ## API Endpoints (Sample)
 
-Below are sample routes you might find useful as you expand your REST API. Adjust URLs, request/response bodies, and HTTP methods as needed.
+Below are sample routes you might add for inventory management. Adjust URLs, request/response bodies, and methods as needed.
 
 ### Health Check
 
@@ -440,131 +444,181 @@ Below are sample routes you might find useful as you expand your REST API. Adjus
 
   1. Writes key `ping` → `pong` (TTL = 1 minute) into Redis.
   2. Reads it back.
-  3. Returns `{ "ping": "pong" }` on success or a 500‐error JSON on failure.
+  3. Returns `{ "ping": "pong" }` on success or 500-error JSON on failure.
 
-### Todos CRUD (Examples)
+### Inventory CRUD (Examples)
 
-You’ll likely add a `TodoHandler` under `/todos` or a similar grouping:
+You’ll likely create routes under `/items` and `/categories`.
 
-- **Create Todo**
+#### Create Item
 
-  ```
-  POST /todos
-  Content-Type: application/json
+```
+POST /items
+Content-Type: application/json
 
-  {
-    "title": "Buy groceries",
-    "priority": "high",
-    "tags": ["shopping", "errands"]
-  }
-  ```
+{
+  "name": "Wireless Mouse",
+  "category_id": 3,
+  "quantity": 50,
+  "price": 29.99,
+  "tags": ["electronics", "accessories"]
+}
+```
 
-  **Response:**
+**Response:**
 
-  ```json
+```json
+{
+  "id": 1,
+  "name": "Wireless Mouse",
+  "category_id": 3,
+  "quantity": 50,
+  "price": 29.99,
+  "tags": ["electronics", "accessories"],
+  "created_at": "2025-06-06T16:00:00Z"
+}
+```
+
+#### List Items
+
+```
+GET /items
+```
+
+**Response:**
+
+```json
+[
   {
     "id": 1,
-    "title": "Buy groceries",
-    "completed": false,
-    "is_active": true,
-    "priority": "high",
-    "tags": ["shopping", "errands"],
+    "name": "Wireless Mouse",
+    "category_id": 3,
+    "quantity": 50,
+    "price": 29.99,
+    "tags": ["electronics", "accessories"],
     "created_at": "2025-06-06T16:00:00Z"
+  },
+  {
+    "id": 2,
+    "name": "Notebook",
+    "category_id": 5,
+    "quantity": 200,
+    "price": 2.49,
+    "tags": ["stationery"],
+    "created_at": "2025-06-05T10:15:00Z"
   }
-  ```
+]
+```
 
-- **List Todos**
+#### Get Single Item
 
-  ```
-  GET /todos
-  ```
+```
+GET /items/:id
+```
 
-  **Response:**
+**Response:**
 
-  ```json
-  [
-    {
-      "id": 1,
-      "title": "Buy groceries",
-      "completed": false,
-      "is_active": true,
-      "priority": "high",
-      "tags": ["shopping", "errands"],
-      "created_at": "2025-06-06T16:00:00Z"
-    },
-    {
-      "id": 2,
-      "title": "Send emails",
-      "completed": true,
-      "is_active": true,
-      "priority": "medium",
-      "tags": ["work"],
-      "created_at": "2025-06-05T10:15:00Z"
-    }
-  ]
-  ```
+```json
+{
+  "id": 1,
+  "name": "Wireless Mouse",
+  "category_id": 3,
+  "quantity": 50,
+  "price": 29.99,
+  "tags": ["electronics", "accessories"],
+  "created_at": "2025-06-06T16:00:00Z"
+}
+```
 
-- **Get Single Todo**
+#### Update Item
 
-  ```
-  GET /todos/:id
-  ```
+```
+PUT /items/:id
+Content-Type: application/json
 
-  **Response:**
+{
+  "quantity": 45,
+  "price": 27.99
+}
+```
 
-  ```json
+**Response:**
+
+```json
+{
+  "id": 1,
+  "name": "Wireless Mouse",
+  "category_id": 3,
+  "quantity": 45,
+  "price": 27.99,
+  "tags": ["electronics", "accessories"],
+  "updated_at": "2025-06-06T17:00:00Z"
+}
+```
+
+#### Delete Item (Soft-Delete)
+
+```
+DELETE /items/:id
+```
+
+**Response:**
+
+```json
+{
+  "message": "Item soft-deleted successfully"
+}
+```
+
+#### Create Category
+
+```
+POST /categories
+Content-Type: application/json
+
+{
+  "name": "Electronics",
+  "description": "All electronic gadgets"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": 3,
+  "name": "Electronics",
+  "description": "All electronic gadgets",
+  "created_at": "2025-06-06T16:10:00Z"
+}
+```
+
+#### List Categories
+
+```
+GET /categories
+```
+
+**Response:**
+
+```json
+[
   {
     "id": 1,
-    "title": "Buy groceries",
-    "completed": false,
-    "is_active": true,
-    "priority": "high",
-    "tags": ["shopping", "errands"],
-    "created_at": "2025-06-06T16:00:00Z"
-  }
-  ```
-
-- **Update Todo**
-
-  ```
-  PUT /todos/:id
-  Content-Type: application/json
-
+    "name": "Stationery",
+    "description": "Office and school supplies",
+    "created_at": "2025-06-05T09:00:00Z"
+  },
   {
-    "title": "Buy groceries and supplies",
-    "completed": true
+    "id": 3,
+    "name": "Electronics",
+    "description": "All electronic gadgets",
+    "created_at": "2025-06-06T16:10:00Z"
   }
-  ```
+]
+```
 
-  **Response:**
-
-  ```json
-  {
-    "id": 1,
-    "title": "Buy groceries and supplies",
-    "completed": true,
-    "is_active": true,
-    "priority": "high",
-    "tags": ["shopping", "errands"],
-    "updated_at": "2025-06-06T17:00:00Z"
-  }
-  ```
-
-- **Delete Todo** (soft‐delete)
-
-  ```
-  DELETE /todos/:id
-  ```
-
-  **Response:**
-
-  ```json
-  {
-    "message": "Todo soft-deleted successfully"
-  }
-  ```
-
-Adjust the above based on your service layer and how you structure request/response DTOs.
+Adjust these examples based on your service layer and request/response DTOs.
 
 ---
 
@@ -574,13 +628,13 @@ This project uses Go’s `log/slog` for structured, leveled logging. In `logging
 
 - Configure JSON vs. console format.
 - Set log level (`INFO`, `DEBUG`, `ERROR`, etc.).
-- Attach global fields (e.g. `app_name`, `version`, `env`).
+- Attach global fields (e.g., `app_name`, `version`, `env`).
 
 Example usage in a handler:
 
 ```go
-slog.Info("Creating new todo", "user_id", userID, "title", payload.Title)
-slog.Error("Failed to save todo", "err", err)
+slog.Info("Creating new item", "user_id", userID, "item_name", payload.Name)
+slog.Error("Failed to update item", "err", err)
 ```
 
 In production, redirect logs to a file or an external log aggregator. In development, console output is fine.
@@ -594,7 +648,7 @@ In production, redirect logs to a file or an external log aggregator. In develop
 You can write unit tests for:
 
 - Config loading (`config.AppConfig()` with a temporary YAML).
-- Service layer (e.g. `TodoService`) by mocking the database or using an in-memory SQLite for speed.
+- Service layer (e.g., `ItemService`) by mocking the database or using an in-memory SQLite for speed.
 - Redis operations by pointing to a local Redis instance or using a mock client interface.
 
 Example:
@@ -609,12 +663,12 @@ go test ./pkg/services
 
 For end-to-end testing:
 
-1. Spin up a MySQL container and Redis container (using Docker Compose).
+1. Spin up a MySQL container and Redis container (via Docker Compose).
 2. Run migrations.
-3. Start the Go app in test mode (maybe with a separate YAML `config/test.yml` that points to a test database).
-4. Use a tool like [httpexpect](https://github.com/gavv/httpexpect) or plain `net/http` to send requests to your endpoints and assert responses.
+3. Start the Go app in test mode (with a separate YAML, e.g., `config/test.yml`, pointing to a test database).
+4. Use [httpexpect](https://github.com/gavv/httpexpect) or plain `net/http` to send requests and assert responses.
 
-You might add a `Makefile` target:
+You might add a Makefile target:
 
 ```makefile
 test-integration:
@@ -628,40 +682,28 @@ test-integration:
 
 ## Contributing
 
-1. Fork the repository (top right on GitHub).
-2. Create a topic branch:
+1. **Fork** the repository (top right on GitHub).
+2. **Branch**:
 
    ```bash
    git checkout -b feature/awesome-feature
    ```
 
-3. Make your changes. Ensure linting/tests pass.
-4. Commit with clear messages:
+3. **Make changes**, ensure lint/tests pass.
+4. **Commit** with clear messages:
 
    ```bash
-   git commit -m "feat: add priority enum to todos"
+   git commit -m "feat: add stock tracking field to items"
    ```
 
-5. Push to your fork and open a Pull Request (PR) against `main`.
-6. Describe your changes, why they’re needed, and any migration or breaking changes.
-7. Wait for review and address comments.
+5. **Push** to your fork and open a Pull Request (PR) against `main`.
+6. **Describe** your changes and any migration or breaking changes.
+7. **Wait** for review and address comments.
 
-Please follow Go idioms (e.g., `go fmt`, `golint`) and add or update tests for new features.
+Follow Go idioms (`go fmt`, `golint`) and add/update tests for new features.
 
 ---
 
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
----
-
-With these additions, any new contributor or user should be able to:
-
-- Clone and set up the project
-- Understand where to configure environment details (YAML vs. `.env`)
-- Run migrations and start the server (both with and without Docker)
-- Verify Redis connectivity
-- See sample endpoints that illustrate how to build CRUD routes
-- Write and execute tests
-- Contribute in a structured manner
