@@ -1,2 +1,3 @@
-# inventory-managements-golang
+# Inventory Managements Golang
+
 Inventory management for portfolio
