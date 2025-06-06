@@ -1,10 +1,6 @@
-Below is an expanded README with additional sections and details that many developers find useful. Feel free to modify or remove anything that doesn’t apply to your setup.
-
----
-
 # Inventory Managements Golang
 
-Inventory management system for your portfolio project.
+Inventory management system for portfolio project with golang.
 
 ## Table of Contents
 
@@ -88,7 +84,7 @@ This project uses a single YAML file for all configuration. By default, the code
 env: "dev"
 
 app:
-  port: 3179
+  port: 1234
   name: "Project Name"
   version: "1.0.0"
   description: "Project description."
