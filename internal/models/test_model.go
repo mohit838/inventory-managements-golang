@@ -3,8 +3,10 @@ package models
 import "time"
 
 type Test struct {
-	ID          int       `db:"id" json:"id"`
-	Username    string    `db:"username" json:"username"`
+	ID          int64       `db:"id" json:"id"`
+	Name        string    `db:"username" json:"username"`
+	Email       string    `db:"email" json:"email"`
+	Password    string    `db:"password" json:"-"` // Do not expose in JSON
 	IsActive    bool      `db:"is_active" json:"is_active"`
 	Role        string    `db:"role" json:"role"`
 	ProfileType string    `db:"profile_type" json:"profile_type"`
