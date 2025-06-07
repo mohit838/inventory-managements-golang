@@ -11,7 +11,7 @@ import (
 	"github.com/mohit838/inventory-managements-golang/pkg/redis"
 )
 
-func Setup() *gin.Engine {
+func Setup(d Deps) *gin.Engine {
 
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
@@ -38,6 +38,11 @@ func Setup() *gin.Engine {
 		}
 		c.JSON(http.StatusOK, gin.H{"ping": val})
 	})
+
+	// Test router without middleware later add middleware
+	//----------------------------------------------
+	testRoutes := r.Group("/api/v1")
+	TestRouters(testRoutes, d.TestService)
 
 	return r
 }

@@ -3,13 +3,16 @@ package container
 import (
 	"log"
 
+	"github.com/mohit838/inventory-managements-golang/internal/repository"
+	"github.com/mohit838/inventory-managements-golang/internal/service"
 	"github.com/mohit838/inventory-managements-golang/pkg/config"
 	"github.com/mohit838/inventory-managements-golang/pkg/db"
 	"github.com/mohit838/inventory-managements-golang/pkg/redis"
 )
 
 type Container struct {
-	DBClose func() error
+	TestService service.TestService
+	DBClose     func() error
 }
 
 func PkgContainer(cfg *config.Config) (*Container, error) {
@@ -20,17 +23,19 @@ func PkgContainer(cfg *config.Config) (*Container, error) {
 	if err != nil {
 		log.Fatalf("DB init failed: %v", err)
 	}
-	defer db.Close()
+	
 
 	// Redis Initialized
 	//---------------------------------------------
 	redis.RedisInitialized(cfg.Redis)
 
-	// Initialized or declared services
+	// Initialized services
+	testRepo := repository.NewTestRepository(db)
+    testService := service.NewTestService(testRepo)
 
 	return &Container{
-		// Pass services
-		DBClose: db.Close,
+		TestService: testService,
+		DBClose:     db.Close,
 	}, nil
 
 }
