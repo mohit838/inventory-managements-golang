@@ -42,6 +42,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	resp, err := h.authSvc.Login(c.Request.Context(), &dto)
+
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return

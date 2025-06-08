@@ -23,7 +23,8 @@ func NewUserRepository(db *sqlx.DB) UserRepository {
 // Get user by email
 func (r *userRepo) GetByEmail(ctx context.Context, email string) (*models.User, error) {
 	var user models.User
-	err := r.db.GetContext(ctx, &user, `SELECT * FROM users WHERE email = ? AND is_deleted = FALSE LIMIT 1`, email)
+	err := r.db.GetContext(ctx, &user, `SELECT * FROM users WHERE email = ? AND is_active = true LIMIT 1`, email)
+
 	if err != nil {
 		return nil, err
 	}

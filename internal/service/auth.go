@@ -60,6 +60,7 @@ func (s *authService) Register(ctx context.Context, dto *dtos.RegisterRequestDTO
 // Login user
 func (s *authService) Login(ctx context.Context, dto *dtos.LoginRequestDTO) (*dtos.AuthResponseDTO, error) {
 	user, err := s.repo.GetByEmail(ctx, dto.Email)
+
 	if err != nil || user == nil {
 		return nil, errors.New("invalid email or password")
 	}
