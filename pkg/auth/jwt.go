@@ -68,7 +68,7 @@ func (j *JWTService) ParseToken(tokenStr string, tokenType TokenType) (*CustomCl
 		return nil, errors.New("invalid token type")
 	}
 
-	token, err := jwt.ParseWithClaims(tokenStr, &CustomClaims{}, func(t *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &CustomClaims{}, func(t *jwt.Token) (any, error) {
 		return []byte(secret), nil
 	})
 
@@ -82,4 +82,3 @@ func (j *JWTService) ParseToken(tokenStr string, tokenType TokenType) (*CustomCl
 	}
 	return claims, nil
 }
-
