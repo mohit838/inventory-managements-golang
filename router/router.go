@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mohit838/inventory-managements-golang/internal/middleware"
 	"github.com/mohit838/inventory-managements-golang/pkg/config"
 	"github.com/mohit838/inventory-managements-golang/pkg/redis"
 )
@@ -41,8 +42,19 @@ func Setup(d Deps) *gin.Engine {
 
 	// All project router will add here
 	//----------------------------------------------
+	// Public routes
 	authRoutes := r.Group("/api/v1")
 	AuthRouters(authRoutes, d.AuthService)
+
+	// Protected routes
+	protected := r.Group("/api/v1")
+	protected.Use(middleware.AuthMiddleware(d.JWTService))
+	{
+		protected.GET("/me", func(c *gin.Context) {
+			userID := c.MustGet("userID").(int64)
+			c.JSON(http.StatusOK, gin.H{"user_id": userID})
+		})
+	}
 
 	return r
 }

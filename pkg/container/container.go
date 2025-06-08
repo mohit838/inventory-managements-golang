@@ -13,6 +13,7 @@ import (
 
 type Container struct {
 	AuthService service.AuthService
+	JWTService  *auth.JWTService
 	DBClose     func() error
 }
 
@@ -42,6 +43,7 @@ func PkgContainer(cfg *config.Config) (*Container, error) {
 
 	return &Container{
 		AuthService: authService,
+		JWTService:  jwtService,
 		DBClose:     db.Close,
 	}, nil
 }
