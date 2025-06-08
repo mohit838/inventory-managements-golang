@@ -1,0 +1,114 @@
+basePath: /api/v1
+definitions:
+  dtos.AuthResponseDTO:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  dtos.LoginRequestDTO:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dtos.RegisterRequestDTO:
+    properties:
+      email:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      password:
+        minLength: 6
+        type: string
+      role_id:
+        type: integer
+    required:
+    - email
+    - name
+    - password
+    - role_id
+    type: object
+host: localhost:3179
+info:
+  contact:
+    email: connect@mohitul-islam.com
+    name: Mohit
+    url: http://www.mohitul-islam.com
+  description: This is a sample server for Inventory Management.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Inventory Management API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns access/refresh tokens
+      parameters:
+      - description: User credentials
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.LoginRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.AuthResponseDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login user
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user and returns access/refresh tokens
+      parameters:
+      - description: New user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.RegisterRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.AuthResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register new user
+      tags:
+      - Auth
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -16,7 +16,16 @@ func NewAuthHandler(authSvc service.AuthService) *AuthHandler {
 	return &AuthHandler{authSvc: authSvc}
 }
 
-// POST /api/v1/auth/register
+// Register godoc
+// @Summary Register new user
+// @Description Creates a new user and returns access/refresh tokens
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body dtos.RegisterRequestDTO true "New user"
+// @Success 200 {object} dtos.AuthResponseDTO
+// @Failure 400 {object} map[string]string
+// @Router /auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var dto dtos.RegisterRequestDTO
 	if err := c.ShouldBindJSON(&dto); err != nil {
@@ -33,7 +42,16 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, resp)
 }
 
-// POST /api/v1/auth/login
+// Login godoc
+// @Summary Login user
+// @Description Authenticates a user and returns access/refresh tokens
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param data body dtos.LoginRequestDTO true "User credentials"
+// @Success 200 {object} dtos.AuthResponseDTO
+// @Failure 401 {object} map[string]string
+// @Router /auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var dto dtos.LoginRequestDTO
 	if err := c.ShouldBindJSON(&dto); err != nil {

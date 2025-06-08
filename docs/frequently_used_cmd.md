@@ -61,3 +61,13 @@
     config/
     redis/
     db/
+
+## For swagger
+
+    export PATH=$PATH:$(go env GOPATH)/bin
+    swag --version
+
+    echo 'export PATH=$PATH:$(go env GOPATH)/bin' >> ~/.bashrc
+    source ~/.bashrc
+
+    swag init --generalInfo cmd/api/main.go --output docs

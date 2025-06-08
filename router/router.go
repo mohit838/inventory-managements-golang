@@ -10,10 +10,12 @@ import (
 	"github.com/mohit838/inventory-managements-golang/internal/middleware"
 	"github.com/mohit838/inventory-managements-golang/pkg/config"
 	"github.com/mohit838/inventory-managements-golang/pkg/redis"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func Setup(d Deps) *gin.Engine {
-
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
 
@@ -40,6 +42,10 @@ func Setup(d Deps) *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{"ping": val})
 	})
 
+	// Swagger routes
+	//----------------------------------------------
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// All project router will add here
 	//----------------------------------------------
 	// Public routes
@@ -50,6 +56,16 @@ func Setup(d Deps) *gin.Engine {
 	protected := r.Group("/api/v1")
 	protected.Use(middleware.AuthMiddleware(d.JWTService))
 	{
+
+		// Me godoc
+		// @Summary Get current user info
+		// @Description Returns details of the logged-in user
+		// @Tags Users
+		// @Security BearerAuth
+		// @Produce json
+		// @Success 200 {object} map[string]interface{}
+		// @Failure 401 {object} map[string]string
+		// @Router /me [get]
 		protected.GET("/me", func(c *gin.Context) {
 			userID := c.MustGet("userID").(int64)
 			c.JSON(http.StatusOK, gin.H{"user_id": userID})

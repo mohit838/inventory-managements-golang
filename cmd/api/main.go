@@ -1,3 +1,22 @@
+// @title Inventory Management API
+// @version 1.0
+// @description This is a sample server for Inventory Management.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name Mohit
+// @contact.url http://www.mohitul-islam.com
+// @contact.email connect@mohitul-islam.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:3179
+// @BasePath /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
 package main
 
 import (
@@ -9,6 +28,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/mohit838/inventory-managements-golang/docs"
 	"github.com/mohit838/inventory-managements-golang/logging"
 	"github.com/mohit838/inventory-managements-golang/pkg/config"
 	"github.com/mohit838/inventory-managements-golang/pkg/container"
@@ -16,6 +36,12 @@ import (
 )
 
 func main() {
+	docs.SwaggerInfo.Title = "Inventory Management API"
+	docs.SwaggerInfo.Description = "This is a sample server for Inventory Management."
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Host = "localhost:3179"
+	docs.SwaggerInfo.BasePath = "/api/v1"
+
 	// Logging Init
 	//---------------------------------------------
 	logging.Init()

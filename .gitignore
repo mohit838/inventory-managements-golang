@@ -44,3 +44,6 @@ tmp/
 /logs
 
 json_formatter.json
+
+# ignore docs in production
+# /docs
