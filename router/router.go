@@ -39,10 +39,10 @@ func Setup(d Deps) *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{"ping": val})
 	})
 
-	// Test router without middleware later add middleware
+	// All project router will add here
 	//----------------------------------------------
-	testRoutes := r.Group("/api/v1")
-	TestRouters(testRoutes, d.TestService)
+	authRoutes := r.Group("/api/v1")
+	AuthRouters(authRoutes, d.AuthService)
 
 	return r
 }

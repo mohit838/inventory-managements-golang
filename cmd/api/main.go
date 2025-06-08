@@ -40,7 +40,7 @@ func main() {
 	//-----------------------------------------
 	// Note:: Pass services from container
 	// Note:: We are using Gin
-	r := router.Setup(router.Deps{TestService: c.TestService})
+	r := router.Setup(router.Deps{AuthService: c.AuthService})
 
 	// Start the server
 	//----------------------------------------
