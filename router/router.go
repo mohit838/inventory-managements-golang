@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mohit838/inventory-managements-golang/internal/middleware"
 	"github.com/mohit838/inventory-managements-golang/pkg/config"
+	"github.com/mohit838/inventory-managements-golang/pkg/cors"
+	ratelimit "github.com/mohit838/inventory-managements-golang/pkg/ratelimiter"
 	"github.com/mohit838/inventory-managements-golang/pkg/redis"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -17,7 +19,7 @@ import (
 
 func Setup(d Deps) *gin.Engine {
 	r := gin.New()
-	r.Use(gin.Logger(), gin.Recovery())
+	r.Use(gin.Logger(), gin.Recovery(), cors.Middleware(), ratelimit.Middleware())
 
 	// Public routes
 	//----------------------------------------------
