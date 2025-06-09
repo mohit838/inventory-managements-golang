@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/mohit838/inventory-managements-golang/dtos"
 	"github.com/mohit838/inventory-managements-golang/internal/repository"
@@ -14,6 +15,7 @@ import (
 type AuthService interface {
 	Register(ctx context.Context, dto *dtos.RegisterRequestDTO) (*dtos.AuthResponseDTO, error)
 	Login(ctx context.Context, dto *dtos.LoginRequestDTO) (*dtos.AuthResponseDTO, error)
+	RefreshToken(ctx context.Context, dto *dtos.RefreshTokenRequest) (*dtos.TokenResponse, error)
 }
 
 type authService struct {
@@ -71,6 +73,28 @@ func (s *authService) Login(ctx context.Context, dto *dtos.LoginRequestDTO) (*dt
 	}
 
 	return s.generateTokens(user.ID)
+}
+
+func (s *authService) RefreshToken(ctx context.Context, dto *dtos.RefreshTokenRequest) (*dtos.TokenResponse, error) {
+	claims, err := s.jwtService.VerifyToken(dto.RefreshToken, auth.TokenTypeRefresh)
+	if err != nil {
+		return nil, fmt.Errorf("invalid refresh token: %w", err)
+	}
+
+	access, err := s.jwtService.GenerateToken(claims.UserID, auth.TokenTypeAccess)
+	if err != nil {
+		return nil, err
+	}
+
+	refresh, err := s.jwtService.GenerateToken(claims.UserID, auth.TokenTypeRefresh)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dtos.TokenResponse{
+		AccessToken:  access,
+		RefreshToken: refresh,
+	}, nil
 }
 
 // Common: create access & refresh tokens

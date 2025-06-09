@@ -82,3 +82,7 @@ func (j *JWTService) ParseToken(tokenStr string, tokenType TokenType) (*CustomCl
 	}
 	return claims, nil
 }
+
+func (j *JWTService) VerifyToken(tokenStr string, tokenType TokenType) (*CustomClaims, error) {
+	return j.ParseToken(tokenStr, tokenType)
+}
