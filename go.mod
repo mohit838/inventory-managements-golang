@@ -63,4 +63,5 @@ require (
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/redis/go-redis/v9 v9.9.0
 	github.com/ulule/limiter/v3 v3.11.2
+	golang.org/x/time v0.12.0
 )
