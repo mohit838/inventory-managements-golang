@@ -10,7 +10,9 @@ import (
 func AuthRouters(r *gin.RouterGroup, authService service.AuthService) {
 	authHandler := handler.NewAuthHandler(authService)
 
+	refreshLimiter := ratelimit.RefreshRateLimitMiddleware()
+
 	r.POST("/auth/register", authHandler.Register)
 	r.POST("/auth/login", authHandler.Login)
-	r.POST("/auth/refresh", ratelimit.RefreshRateLimitMiddleware(), authHandler.RefreshToken)
+	r.POST("/auth/refresh", refreshLimiter, authHandler.RefreshToken)
 }
