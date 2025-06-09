@@ -10,31 +10,49 @@ definitions:
   dtos.LoginRequestDTO:
     properties:
       email:
+        example: john@example.com
         type: string
       password:
+        example: secret123
         type: string
     required:
     - email
     - password
     type: object
+  dtos.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
   dtos.RegisterRequestDTO:
     properties:
       email:
+        example: john@example.com
         type: string
       name:
-        maxLength: 100
-        minLength: 2
+        example: John Doe
         type: string
       password:
+        example: secret123
         minLength: 6
         type: string
       role_id:
+        example: 1
         type: integer
     required:
     - email
     - name
     - password
     - role_id
+    type: object
+  dtos.TokenResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
     type: object
 host: localhost:3179
 info:
@@ -76,6 +94,34 @@ paths:
               type: string
             type: object
       summary: Login user
+      tags:
+      - Auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new access token with refresh tokens
+      parameters:
+      - description: New user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Refresh Token
       tags:
       - Auth
   /auth/register:

@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -69,10 +70,18 @@ func (j *JWTService) ParseToken(tokenStr string, tokenType TokenType) (*CustomCl
 	}
 
 	token, err := jwt.ParseWithClaims(tokenStr, &CustomClaims{}, func(t *jwt.Token) (any, error) {
+		if t.Method.Alg() != jwt.SigningMethodHS256.Alg() {
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+		}
 		return []byte(secret), nil
 	})
 
-	if err != nil || !token.Valid {
+	if err != nil {
+		fmt.Println("JWT parse error:", err)
+		return nil, errors.New("invalid or expired token")
+	}
+
+	if !token.Valid {
 		return nil, errors.New("invalid or expired token")
 	}
 

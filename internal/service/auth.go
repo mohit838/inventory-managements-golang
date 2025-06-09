@@ -77,6 +77,7 @@ func (s *authService) Login(ctx context.Context, dto *dtos.LoginRequestDTO) (*dt
 
 func (s *authService) RefreshToken(ctx context.Context, dto *dtos.RefreshTokenRequest) (*dtos.TokenResponse, error) {
 	claims, err := s.jwtService.VerifyToken(dto.RefreshToken, auth.TokenTypeRefresh)
+
 	if err != nil {
 		return nil, fmt.Errorf("invalid refresh token: %w", err)
 	}
